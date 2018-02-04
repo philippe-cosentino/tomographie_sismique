@@ -1,0 +1,52 @@
+﻿body, html {
+	position: static; 
+	overflow-y:auto;
+	overflow:hidden;
+	margin:0px;
+	padding:0px;
+	background:#222222;
+	font-family:"Trebuchet MS", Helvetica, sans-serif;
+}
+
+div#divbg
+{
+	font-size:20px;
+	color:#FFFFFF;
+	margin:0px;
+	background-color:#000000;
+	padding:0px;
+}
+
+div#divd
+{
+	margin:0px;
+	background-color:#000000;
+	color:#FFFFFF;
+	padding:0px;
+}
+
+p {
+	
+}
+
+h1 {
+	color:#FFFFFF;
+}
+
+canvas {
+    display: block; /* fix necessary to remove space at bottom of canvas */
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+td { 
+
+ }
