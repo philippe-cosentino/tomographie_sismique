@@ -1,0 +1,209 @@
+﻿<!doctype html>
+<html>
+<head>
+	<title>Tomographie sismique v2</title>
+	<link rel="icon" type="image/png" href="images/favicon.png" />
+	<meta charset="utf-8">
+	<meta name="author" content="Philippe COSENTINO" />
+	<META name="description" CONTENT="Une application qui permet de r&eacute;aliser des coupes tomographiques.">
+	<meta name="keywords" content="tomographie sismique" />
+	<link rel="stylesheet" href="js/style.css" type="text/css">
+	<link rel="stylesheet" href="js/range-slider.css" type="text/css">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<script src="js/demarre.js"></script>
+</head>
+
+<body id="body" onkeypress="clavier(event)">
+	<div id="divchargement" style="background-color:black;font-size:2vmin;color:#BBB">
+		<div id="div_titre_chargement" style="width:100%;position:absolute;top:4em;text-align:center;font-size:1.5em;">Tomographie sismique - v2.2</div>
+		<div style=" display: flex;  align-items: center; justify-content: center; height:100vh">
+			<div id="image_chargement" style="height:40vmin;opacity:0">
+				<img src="images/splash.jpg" height="100%">
+			</div>
+		</div>
+		<div id="div_chargement" style="width:100%;position:absolute;bottom:2em;text-align:center;"></div>
+		<div id="div_chargement_auteur" style="width:100%;text-align:right;position:absolute;bottom:1em;right:2em;font-size:0.8em;color:#666;"><i>Philippe COSENTINO, mars 2017</i></div>
+	</div>
+	<div id="divmenu" style="display:none;">
+	<canvas id="canv_menu" style="position:absolute;left:0px;top:0px;z-index: 0;" onmousemove="survolMenu(event);" onmouseup="mouseUpMenu(event);"></canvas>
+	</div>
+	<div id="divgl" style="display:none;">
+	<canvas id="canv_deroul" style="position:absolute;left:0px;top:0px;z-index: 2;" onmouseup="mouseUpDeroul(event);" onmouseout="effaceDeroul();"></canvas>
+	<canvas id="canv_globe" style="position:absolute;left:0px;top:0px;z-index: 1;" onmouseout="mouseOut(event);" onmousemove="bougeGlobe(event);" onmousedown="mouseDownGlobe(event);" onmouseup="mouseUp(event);"></canvas>
+	<canvas id="canv_coords" style="position:absolute;left:0px;top:0px;z-index: 0;"></canvas>
+	</div>
+
+	<script>
+	
+	</script>
+	<div id="divcoupe" style="display:none;">
+		<div id="div_calcul" style="position:relative;left:0;top:0;height:100%;width:100%;text-align:center;z-index:2;opacity:0.1;display:none;">
+			<div style="position:relative;width:20%;left:40%;top:50%;">
+				<img src="images/gears.png" style="width:80%">
+				<p style="color:black;font-size:1.3em">Calcul en cours</p>
+			</div>
+		</div>
+		
+		<div id="div_lissage" style="position:relative;left:0;top:0;height:100%;width:100%;text-align:center;z-index:2;opacity:0.1;display:none;">
+			<div style="position:relative;width:20%;left:40%;top:48%;">
+				<img src="images/fer.png" style="width:80%">
+				<p style="color:black;font-size:1.3em">Lissage en cours</p>
+			</div>
+		</div>
+		
+		
+		<div id="div_controles" style="z-index:100;position:absolute;width:100%;height:12%;bottom:11%;" class="noselect">
+			<div id="div_conteneur_controles" style="margin:1em; border:1px solid #777;border-radius:0.2em;background-color:rgba(200, 200, 200, 0.1);display:block;font-size:0.9em;">
+			
+				<table width="100%">
+					<tr>
+						<td  style="text-align: right;height:1.5em;width:12em;"> 
+							Profondeur max :
+						</td>
+						
+						<td style="width:18em"> 
+							<div style="width:100%" class="range-slider" id="range-slider-2"> 
+								<span></span>
+							</div>
+						</td>
+						
+						<td style="width:5em;"> 
+							<div  id="valeur-ranger2" style="margin-left:1em;">??? km</div>
+						</td>
+
+						<td style="text-align: right;height:1.5em;width:12em;"> 
+							Exagération&nbsp;du&nbsp;relief&nbsp;:&nbsp;<br>
+							<i style="font-size:0.75em">(jusqu'à&nbsp;100km&nbsp;de&nbsp;profondeur)</i>
+						</td>
+						
+						<td style="width:18em">
+							<div style="width:100%" class="range-slider" id="range-slider-3">
+							  <span></span>
+							</div>
+						</td>
+						
+						<td style="width:5em;"> 
+							<div  id="valeur-ranger3" style=";margin-left:1em">??? %</div>
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td  style="text-align: right;height:1.5em;width:12em;">  
+							Contraste : 
+						</td>
+						
+						<td style="width:18em">
+							<div style="width:100%" class="range-slider" id="range-slider-1">
+							  <span></span>
+							</div>
+						</td>
+						
+						<td  style="width:5em;">
+							<div  id="valeur-ranger1" style="margin-left:1em;">???</div>
+						</td>	
+						
+					
+						
+						<td  style="text-align: right;height:1.5em;width:12em;">  
+							<div id="div_tol" style="display:none;">
+							Largeur coupe : 
+							</div>
+						</td>
+						
+						<td  style="width:18em">
+							<div style="width:100%;display:none;" class="range-slider" id="range-slider-4">
+							  <span></span>
+							</div>
+						</td>		
+						
+						<td td style="width:5em;overflow: hidden;display: inline-block;white-space: nowrap;">
+							 <div  id="valeur-ranger4" style="margin-left:1em;display:none;">???</div>
+						</td>			
+					</tr>
+					
+					<tr>
+						<td  style="text-align: right;height:1.5em;width:12em;">  
+							Foyers sismiques : 
+						</td>
+						
+						<td style="width:18em"> <!-- case à cocher foyers -->
+							<div style="width:1em;height:1em;border:1px solid #777;border-radius:0.2em;cursor:pointer;align-items: center;  display: flex;  " onclick="checkFoyers()"  class="noselect">
+							<div id="check_foyers" style="background-color:#777;width:0.7em;height:0.7em;margin: auto;border-radius:0.2em;display:none">
+
+							</div>
+							</div>
+						</td>
+						
+						<td  style="width:5em;">
+						</td>
+							
+						
+						<td style="text-align: right;height:1.5em;width:12em;">
+							Volcans :
+						</td>		
+
+						<td  style="width:18em"><!-- case volcans -->
+							<div style="width:1em;height:1em;border:1px solid #777;border-radius:0.2em;cursor:pointer;align-items: center;  display: flex;  " onclick="checkVolcans()"  class="noselect">
+							<div id="check_volcans" style="background-color:#777;width:0.7em;height:0.7em;margin: auto;border-radius:0.2em;display:none">
+
+							</div>
+							</div>
+						</td>
+						
+						<td td style="width:5em;">
+						
+						</td>					
+					</tr>
+					
+					<tr>
+						<td  style="text-align: right;height:1.5em;width:12em;">  
+							Lissage :
+						</td>
+						
+						<td style="width:18em"><!-- case à cocher lissage -->
+							<div style="width:1em;height:1em;border:1px solid #777;border-radius:0.2em;cursor:pointer;align-items: center;  display: flex;  " onclick="checkLissage()"  class="noselect">
+							<div id="check_lissage" style="background-color:#777;width:0.7em;height:0.7em;margin: auto;border-radius:0.2em;display:none">
+
+							</div>
+							</div>
+						</td>
+						
+						<td  style="width:5em;">
+						</td>
+							
+						
+						<td style="text-align: right;height:1.5em;width:12em;">
+							Contraste auto :
+						</td>		
+
+						<td  style="width:18em"><!-- case contraste auto -->
+							<div style="width:1em;height:1em;border:1px solid #777;border-radius:0.2em;cursor:pointer;align-items: center;  display: flex;  " onclick="checkContrasteAuto()"  class="noselect">
+							<div id="check_contrasteauto" style="background-color:#777;width:0.7em;height:0.7em;margin: auto;border-radius:0.2em;display:none">
+
+							</div>
+							</div>
+						</td>
+						
+						<td td style="width:5em;">
+						
+						</td>					
+					</tr>					
+					
+					
+					
+					
+				</table>
+			
+			</div>
+		</div>
+	<canvas id="canv_coupe" style="position:absolute;left:0px;top:0px;z-index: 0;"></canvas>
+	<canvas id="canv_surcoupe" style="position:absolute;left:0px;top:0px;z-index: 2;" onmouseup="mouseUpCoupe(event);" onmousemove="survolCoupe(event);" onmousedown="mouseDownCoupe(event);" onmouseout="mouseOutCoupe();"></canvas>
+	<canvas id="canv_HD" style="position:absolute;left:0px;top:0px;z-index: 1;opacity:0.5;"></canvas>
+	</div>
+	
+</body>
+	<script>
+		go ();
+	</script>
+</html>
